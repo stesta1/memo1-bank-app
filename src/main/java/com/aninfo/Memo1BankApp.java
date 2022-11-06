@@ -83,8 +83,12 @@ public class Memo1BankApp {
 
 	@PostMapping("/accounts/{cbu}/transactions")
 	@ResponseStatus(HttpStatus.CREATED)
-	public Transaction createTransaction(@RequestBody Transaction transaction) {
-		return transactionService.createTransaction(transaction);
+	public ResponseEntity<Transaction> createTransaction(@RequestBody Transaction transaction) {
+		Optional<Account> accountOptional = accountService.findById(transaction.getAccountCBU());
+		if (!accountOptional.isPresent()) {
+			return ResponseEntity.notFound().build();
+		}
+		return new ResponseEntity(transactionService.createTransaction(transaction), HttpStatus.CREATED);
 	}
 
 	@GetMapping("/accounts/{cbu}/transactions")
