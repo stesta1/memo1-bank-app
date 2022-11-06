@@ -39,8 +39,6 @@ public class TransactionService {
         return transactionRepository.save(transaction);
     }
 
-
-
     public Collection<Transaction> getTransactions() {
         return transactionRepository.findAll();
     }
