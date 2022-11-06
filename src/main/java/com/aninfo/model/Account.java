@@ -1,6 +1,7 @@
 package com.aninfo.model;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Account {
@@ -29,7 +30,6 @@ public class Account {
     public Double getBalance() {
         return balance;
     }
-
     public void setBalance(Double balance) {
         this.balance = balance;
     }

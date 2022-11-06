@@ -1,7 +1,9 @@
 package com.aninfo;
 
 import com.aninfo.model.Account;
+import com.aninfo.model.Transaction;
 import com.aninfo.service.AccountService;
+import com.aninfo.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -27,6 +29,9 @@ public class Memo1BankApp {
 	@Autowired
 	private AccountService accountService;
 
+	@Autowired
+	private TransactionService transactionService;
+
 	public static void main(String[] args) {
 		SpringApplication.run(Memo1BankApp.class, args);
 	}
@@ -49,9 +54,8 @@ public class Memo1BankApp {
 	}
 
 	@PutMapping("/accounts/{cbu}")
-	public ResponseEntity<Account> updateAccount(@RequestBody Account account, @PathVariable Long cbu) {
+	public ResponseEntity<Collection> updateAccount(@RequestBody Account account, @PathVariable Long cbu) {
 		Optional<Account> accountOptional = accountService.findById(cbu);
-
 		if (!accountOptional.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
@@ -65,6 +69,7 @@ public class Memo1BankApp {
 		accountService.deleteById(cbu);
 	}
 
+	/*
 	@PutMapping("/accounts/{cbu}/withdraw")
 	public Account withdraw(@PathVariable Long cbu, @RequestParam Double sum) {
 		return accountService.withdraw(cbu, sum);
@@ -73,6 +78,38 @@ public class Memo1BankApp {
 	@PutMapping("/accounts/{cbu}/deposit")
 	public Account deposit(@PathVariable Long cbu, @RequestParam Double sum) {
 		return accountService.deposit(cbu, sum);
+	}
+	*/
+
+	@PostMapping("/accounts/{cbu}/transactions")
+	@ResponseStatus(HttpStatus.CREATED)
+	public Transaction createTransaction(@RequestBody Transaction transaction) {
+		return transactionService.createTransaction(transaction);
+	}
+
+	@GetMapping("/accounts/{cbu}/transactions")
+	public ResponseEntity<Collection<Transaction>> getAccountTransactions(@PathVariable Long cbu) {
+		Optional<Account> accountOptional = accountService.findById(cbu);
+		if (!accountOptional.isPresent()) {
+			return ResponseEntity.notFound().build();
+		}
+		return ResponseEntity.of(transactionService.findByCBU(cbu));
+	}
+
+	@GetMapping("/transactions/{transactionID}")
+	public ResponseEntity<Transaction> getTransaction(@PathVariable Long transactionID) {
+		Optional<Transaction> transactionOptional = transactionService.findById(transactionID);
+		return ResponseEntity.of(transactionOptional);
+	}
+
+	@GetMapping("/transactions")
+	public Collection<Transaction> getTransactions() {
+		return transactionService.getTransactions();
+	}
+
+	@DeleteMapping("/transactions/{transactionID}")
+	public void deleteTransaction(@PathVariable Long transactionID) {
+		transactionService.deleteById(transactionID);
 	}
 
 	@Bean
