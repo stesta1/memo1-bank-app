@@ -30,19 +30,11 @@ public class TransactionService {
         TransactionType transactionType = transaction.getType();
         Double transactionAmount = transaction.getTransactionAmount();
         Long accountCBU = transaction.getAccountCBU();
-        try {
-            if (transactionType == TransactionType.WITHDRAW) {
-                accountService.withdraw(accountCBU, transactionAmount);
-            }
-            if (transactionType == TransactionType.DEPOSIT) {
-                accountService.deposit(accountCBU, transactionAmount);
-            }
+        if (transactionType == TransactionType.WITHDRAW) {
+            accountService.withdraw(accountCBU, transactionAmount);
         }
-        catch(InsufficientFundsException e) {
-            throw new InsufficientFundsException("Insufficient funds");
-        }
-        catch(DepositNegativeSumException i) {
-            throw new DepositNegativeSumException("Cannot deposit negative sums");
+        if (transactionType == TransactionType.DEPOSIT) {
+            accountService.deposit(accountCBU, transactionAmount);
         }
         return transactionRepository.save(transaction);
     }
